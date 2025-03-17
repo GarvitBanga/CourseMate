@@ -1,5 +1,5 @@
-const {Router}=require('express');
-const userRouter=Router();
+const {Router}=require("express");
+const userRouter = Router();
 
  
 userRouter.post("/signup", (req, res) => {
@@ -17,4 +17,6 @@ userRouter.get("/purchases", (req, res) => {
        res.send("Hello World");
 });
    
-module.exports=userRouter;  
+module.exports={
+    userRouter:userRouter
+};

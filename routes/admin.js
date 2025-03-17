@@ -1,4 +1,4 @@
-const {Router}=require('express');
+const {Router}=require("express");
 const adminRouter=Router();
 
  
@@ -13,8 +13,17 @@ adminRouter.post("/signin", (req, res) => {
 });
    
    
-adminRouter.get("/purchases", (req, res) => {
+adminRouter.get("/course", (req, res) => {
        res.send("Hello World");
 });
    
-module.exports=adminRouter;  
+adminRouter.post("/course", (req, res) => {
+    res.send("Hello World");
+});
+adminRouter.put("/course", (req, res) => {
+    res.send("Hello World");
+});
+
+module.exports={
+    adminRouter:adminRouter
+};

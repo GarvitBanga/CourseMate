@@ -1,4 +1,4 @@
-const {Router}=require('express');
+const {Router}=require("express");
 const courseRouter=Router();
 
  
@@ -11,4 +11,6 @@ courseRouter.get("/preview", (req, res) => {
 });
     
    
-module.exports=courseRouter;  
+module.exports={
+    courseRouter:courseRouter
+}
