@@ -1,7 +1,7 @@
 const {Router}=require("express");
 const courseRouter=Router();
 const { usermiddleware } = require("../middleware/user");
- const {purchaseModel}=require('../db');
+ const {courseModel ,purchaseModel}=require('../db');
 
 
 

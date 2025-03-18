@@ -1,5 +1,5 @@
 const {Router}=require("express");
-const { userModel, purchaseModel } = require("../db");
+const {courseModel, userModel, purchaseModel } = require("../db");
 const userRouter = Router();
 const bcrypt=require('bcrypt');
 const { z } = require("zod");
@@ -88,9 +88,14 @@ userRouter.get("/purchases", usermiddleware, async (req, res) => {
     
     let error=false;
     let purchases=null;
+    let coursedata=null;
     try{
         purchases=await purchaseModel.find({
             userID:userID
+        });
+        // console.log(purchases); 
+        coursedata=await courseModel.find({
+            _id:{$in:purchases.map(x=>x.courseID)}
         });
     }catch(err){
         res.status(400).json({message:'No purchases found'});
@@ -100,7 +105,8 @@ userRouter.get("/purchases", usermiddleware, async (req, res) => {
     if(!error){
         res.json({
             message:'Your Purchases',
-            Purchases:purchases
+            Purchases:purchases,
+            Courses:coursedata
         });
     }
 
