@@ -2,8 +2,9 @@ const {Router}=require("express");
 const adminRouter=Router();
 const bcrypt=require('bcrypt');
 const { z } = require("zod");
-const {adminModel}=require('../db');
+const {adminModel,courseModel}=require('../db');
 const jwt=require('jsonwebtoken');
+const { adminmiddleware } = require("../middleware/admin");
 require('dotenv').config();
 const JWT_SECRET_ADMIN=process.env.JWT_SECRET_ADMIN;
 
@@ -85,12 +86,55 @@ adminRouter.post("/signin", async(req, res) => {
 });
    
    
-adminRouter.get("/course", (req, res) => {
+adminRouter.get("/course",adminmiddleware,async(req, res) => {
        res.send("Hello World");
 });
    
-adminRouter.post("/course", (req, res) => {
-    res.send("Hello World");
+adminRouter.post("/course",adminmiddleware, async(req, res) => {
+    const admin=req.admin;
+
+    const {title,description,price,imageURL}=req.body;
+    const creatorID=admin;
+    
+    const reqdbody=z.object({
+        title:z.string(),
+        description:z.string(),
+        price:z.number(),
+        imageURL:z.string()
+    });
+
+    const parseddatasafe=reqdbody.safeParse(req.body); //this returns a object with success and error
+
+    if(!parseddatasafe.success){
+        res.json({
+            message:'Incorrect data format',
+            error:parseddatasafe.error
+        });
+        return;
+    }
+
+    let error=false;
+    let course=null;
+    try{
+        course=await courseModel.create({
+            title:title,
+            description:description,
+            price:price,
+            imageURL:imageURL,
+            creatorID:creatorID
+        });
+    }catch(err){
+        res.status(400).json({message:'Course already exists'});
+        error=true;
+    }
+
+    if(!error){
+        res.json({
+            message:'Course created successfully',
+            course:course._id
+        });
+    }
+
 });
 adminRouter.put("/course", (req, res) => {
     res.send("Hello World");
