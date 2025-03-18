@@ -1,11 +1,12 @@
 const {Router}=require("express");
-const { userModel } = require("../db");
+const { userModel, purchaseModel } = require("../db");
 const userRouter = Router();
 const bcrypt=require('bcrypt');
 const { z } = require("zod");
 const jwt=require('jsonwebtoken');
 require('dotenv').config();
 const JWT_SECRET_USER=process.env.JWT_SECRET_USER;
+const { usermiddleware } = require("../middleware/user");
 // console.log(JWT_SECRET_USER);
 
 
@@ -81,8 +82,28 @@ userRouter.post("/signin", async (req, res) => {
 });
    
    
-userRouter.get("/purchases", (req, res) => {
-       res.send("Hello World");
+userRouter.get("/purchases", usermiddleware, async (req, res) => {
+    const user=req.user;
+    const userID=user;
+    
+    let error=false;
+    let purchases=null;
+    try{
+        purchases=await purchaseModel.find({
+            userID:userID
+        });
+    }catch(err){
+        res.status(400).json({message:'No purchases found'});
+        error=true;
+    }
+
+    if(!error){
+        res.json({
+            message:'Your Purchases',
+            Purchases:purchases
+        });
+    }
+
 });
    
 module.exports={

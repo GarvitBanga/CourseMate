@@ -200,7 +200,7 @@ adminRouter.put("/course",adminmiddleware, async (req, res) => {
 
     if(!error){
         res.json({
-            message:'Course created successfully',
+            message:'Course updated successfully',
             course:course._id
         });
     }
