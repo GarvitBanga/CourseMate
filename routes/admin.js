@@ -86,10 +86,7 @@ adminRouter.post("/signin", async(req, res) => {
 });
    
    
-adminRouter.get("/course",adminmiddleware,async(req, res) => {
-       res.send("Hello World");
-});
-   
+
 adminRouter.post("/course",adminmiddleware, async(req, res) => {
     const admin=req.admin;
 
@@ -136,8 +133,77 @@ adminRouter.post("/course",adminmiddleware, async(req, res) => {
     }
 
 });
-adminRouter.put("/course", (req, res) => {
-    res.send("Hello World");
+
+
+adminRouter.get("/course",adminmiddleware,async (req, res) => {
+    const admin=req.admin;
+    const creatorID=admin;
+    
+    let error=false;
+    let course=null;
+    try{
+        course=await courseModel.find({
+            creatorID:creatorID
+        });
+    }catch(err){
+        res.status(400).json({message:'Course already exists'});
+        error=true;
+    }
+
+    if(!error){
+        res.json({
+            message:'Your Courses',
+            course:course
+        });
+    }
+
+});
+
+adminRouter.put("/course",adminmiddleware, async (req, res) => {
+    const admin=req.admin;
+
+    const {title,description,price,imageURL,courseID}=req.body;
+    const creatorID=admin;
+    
+    const reqdbody=z.object({
+        title:z.string(),
+        description:z.string(),
+        price:z.number(),
+        imageURL:z.string()
+    });
+
+    const parseddatasafe=reqdbody.safeParse(req.body); //this returns a object with success and error
+
+    if(!parseddatasafe.success){
+        res.json({
+            message:'Incorrect data format',
+            error:parseddatasafe.error
+        });
+        return;
+    }
+
+    let error=false;
+    let course=null;
+    try{
+        course=await courseModel.updateOne({
+            _id:courseID,
+            creatorID:creatorID},
+           {title:title,
+            description:description,
+            price:price,
+            imageURL:imageURL
+        });
+    }catch(err){
+        res.status(400).json({message:'Course already exists'});
+        error=true;
+    }
+
+    if(!error){
+        res.json({
+            message:'Course created successfully',
+            course:course._id
+        });
+    }
 });
 
 module.exports={
